@@ -1,15 +1,15 @@
 ﻿
-public class RandomNumberGenerator : IRandomNumberGenerator
+public class RandomNumberGenerator : IRandom
 {
-    private readonly Random rand = new Random();
+    private readonly Random _random = new Random();
     public int GenerateNumber(int maxValue)
     {
-        return rand.Next(maxValue);
+        return _random.Next(maxValue);
     }
 
     public int GenerateNumber(int minValue, int maxValue)
     {
-        return rand.Next(minValue, maxValue);
+        return _random.Next(minValue, maxValue);
     }
 }
 

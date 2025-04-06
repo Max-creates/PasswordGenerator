@@ -1,21 +1,18 @@
 ﻿
 public class ArgumentValidator
 {
-    public static void IsLeftArgumentValid(int left)
+    public static void Validate(int minLength, int maxLength)
     {
-        if(left < 1)
+        if (minLength < 1)
         {
             throw new ArgumentOutOfRangeException(
-                $"leftRange must be greater than 0");
+                $"{nameof(minLength)} must be greater than 0");
         }
-    }
 
-    public static void IsRightArgumentValid(int right, int left)
-    {
-        if (right < left)
+        if (maxLength < minLength)
         {
             throw new ArgumentOutOfRangeException(
-                $"leftRange must be smaller than rightRange");
+                $"{nameof(minLength)} must be smaller than {nameof(maxLength)}");
         }
     }
 }

@@ -1,36 +1,44 @@
 ﻿public class PasswordGenerator
 {
-    private readonly IRandomNumberGenerator _randomNumberGenerator;
-    const string AlphaDigitAndSpecialCharactersIncluded = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=";
-    const string AlphaDigitCharactersOnly = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private readonly IRandom _randomNumberGenerator;
+    string AlphanumericWithSpecialChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=";
+    string AlphanumericCharsOnly = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    public PasswordGenerator(IRandomNumberGenerator randomNumberGenerator)
+    public PasswordGenerator(IRandom randomNumberGenerator)
     {
         _randomNumberGenerator = randomNumberGenerator;
     }
 
     public string GeneratePassword(
-        int left, int right, bool useSpecialCharacters)
+        int minLength, int maxLength, bool shallUseSpecialCharacters)
     {
-        ArgumentValidator.IsLeftArgumentValid(left);
-        ArgumentValidator.IsRightArgumentValid(right, left);
-        var passwordLength = _randomNumberGenerator.GenerateNumber(left, right + 1);
+        ArgumentValidator.Validate(minLength, maxLength);
+        var passwordLength = GeneratePasswordLength(minLength, maxLength);
 
-        //generate random string
-        var charsToUseForPasswordGeneration = useSpecialCharacters ?
-            AlphaDigitAndSpecialCharactersIncluded :
-            AlphaDigitCharactersOnly;
+        var charactersToBeIncluded = shallUseSpecialCharacters ?
+            AlphanumericWithSpecialChars :
+            AlphanumericCharsOnly;
 
-        return new string(Enumerable
-            .Repeat(charsToUseForPasswordGeneration, (int)passwordLength)
-            .Select(charsToUseForPasswordGeneration => charsToUseForPasswordGeneration[
-                GenerateRandomNumberBasedOnCharsLength(charsToUseForPasswordGeneration)])
-            .ToArray());
+        return GenerateRandomString(passwordLength, charactersToBeIncluded);
+    }
+    private int GeneratePasswordLength(int minLength, int maxLength)
+    {
+        return _randomNumberGenerator.GenerateNumber(minLength, maxLength + 1);
     }
 
-    private int GenerateRandomNumberBasedOnCharsLength(string chars)
+    private string GenerateRandomString(
+        int length, 
+        string charactersToBeIncluded)
     {
-        return _randomNumberGenerator.GenerateNumber(chars.Length);
+        var passwordCharacters = 
+            Enumerable.Repeat(charactersToBeIncluded, length)
+            .Select(characters => characters[GetRandomNumberByLength(characters)]).ToArray();
+        return new string(passwordCharacters);
+    }
+
+    private int GetRandomNumberByLength(string characters)
+    {
+        return _randomNumberGenerator.GenerateNumber(characters.Length);
     }
 }
 
